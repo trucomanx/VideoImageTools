@@ -2,7 +2,16 @@
 
 import numpy as np
 import cv2
-from tqdm.notebook import tqdm
+
+import VideoImageTools as vit
+
+
+if vit.in_ipynb():
+    from tqdm.notebook import tqdm
+    #print("notebook")
+else:
+    from tqdm import tqdm
+    #print("console")
 
 def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,show=False):
     
@@ -28,6 +37,7 @@ def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,sho
     
     
     with tqdm(total=total_frames, desc="Working", bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
+    #with tqdm(range(total_frames)) as pbar:
         while(cap.isOpened()):
             ret, frame = cap.read()
             pbar.update(1);
