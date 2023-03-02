@@ -2,3 +2,5 @@
 /.ipynb_checkpoints
 /src/VideoImageTools/__pycache__
 /tests/.ipynb_checkpoints
+src/VideoImageTools.egg-info
+src/dist

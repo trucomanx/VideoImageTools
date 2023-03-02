@@ -14,7 +14,9 @@ setup(
     description='Tools to work with image and video processing',
     #long_description=open('README.txt').read(),
     install_requires=[
-       "numpy" #"Django >= 1.1.1",
+       "numpy", #"Django >= 1.1.1",
+       "Pillow",
+       "opencv-python"
     ],
 )
 
