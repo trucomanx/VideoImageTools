@@ -89,6 +89,7 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
         json.dump(json_data, json_file, indent=4)
    
     # Loop pelos frames do vídeo
+    frame_name=[];
     with tqdm(total=total_frames, desc="Processing", bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
         frame_count = 0
         while cap.isOpened():
@@ -101,6 +102,8 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
                 
                 # Formata o nome do arquivo
                 frame_filename = os.path.join(vout_dir, FORMATO.format(frame_count))
+                
+                frame_name.append(frame_filename);
                 
                 # Salva o frame processado na pasta de saída
                 cv2.imwrite(frame_filename, processed_frame)
@@ -116,7 +119,7 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
 
     cap.release()
     cv2.destroyAllWindows()
-    return True
+    return frame_name, fps;
 
 # import glob
 # image_files = sorted(glob.glob(os.path.join(images_path, '*.png')))
