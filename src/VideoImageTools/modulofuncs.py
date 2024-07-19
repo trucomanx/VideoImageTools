@@ -118,4 +118,31 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
     cv2.destroyAllWindows()
     return True
 
+# import glob
+# image_files = sorted(glob.glob(os.path.join(images_path, '*.png')))
+
+def images_to_video(image_files, fps, output_video_path):
+    # Obtém a lista de arquivos de imagem no diretório
+    
+    
+    if not image_files:
+        raise ValueError("Nenhuma imagem encontrada no diretório especificado.")
+    
+    # Lê a primeira imagem para obter as dimensões
+    first_image = cv2.imread(image_files[0])
+    height, width, _ = first_image.shape
+    
+    # Define o codec e cria o objeto VideoWriter
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+    
+    # Adiciona cada imagem ao vídeo
+    for image_file in image_files:
+        image = cv2.imread(image_file)
+        video_writer.write(image)
+    
+    # Libera o objeto VideoWriter e fecha todas as janelas
+    video_writer.release()
+    cv2.destroyAllWindows()
+    print(f"Vídeo criado com sucesso em: {output_video_path}")
 
