@@ -49,7 +49,7 @@ def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,sho
                     # Obtém o número do frame atual
                     frame_number = int(cap.get(cv2.CAP_PROP_POS_FRAMES));
                     if frame_number%extra_func_counter==0:
-                        extra_func();
+                        extra_func(cap);
                 
                 #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 
