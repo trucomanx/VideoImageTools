@@ -15,7 +15,7 @@ else:
     from tqdm import tqdm
     #print("console")
 
-def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,show=False):
+def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,show=False,extra_func_counter=0, extra_func=None):
     
     fps=25;
     
@@ -45,6 +45,12 @@ def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,sho
             pbar.update(1);
             
             if ret==True:
+                if extra_func_counter>0:
+                    # Obtém o número do frame atual
+                    frame_number = int(cap.get(cv2.CAP_PROP_POS_FRAMES));
+                    if frame_number%extra_func_counter=0:
+                        extra_func();
+                
                 #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 
                 frame=func(predictor,frame);
