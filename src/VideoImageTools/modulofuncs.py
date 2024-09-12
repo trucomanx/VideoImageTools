@@ -71,10 +71,15 @@ def apply_func_predictor_over_video_outmp4(func,predictor,vin_path,vout_path,sho
     return True;
 
 
-def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_dir, show=False,FORMATO = "frame_{:05d}.png"):
+def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_dir, show=False,FORMATO = "frame_{:05d}.png",batch_size_func=None):
     # Cria a pasta de saída se não existir
     if not os.path.exists(vout_dir):
         os.makedirs(vout_dir)
+    
+    #
+    if not (batch_size_func is None or (isinstance(batch_size_func, int) and batch_size_func > 0)):
+        print("ERROR!!!!! batch_size_func>0")
+        exit();
     
     # Captura de vídeo
     cap = cv2.VideoCapture(vin_path)
@@ -97,6 +102,7 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
         json.dump(json_data, json_file, indent=4)
    
     # Loop pelos frames do vídeo
+    list_frame=[];
     image_files=[];
     with tqdm(total=total_frames, desc="Processing", bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
         frame_count = 0
@@ -105,23 +111,47 @@ def apply_func_predictor_over_video_to_frames(func, predictor, vin_path, vout_di
             pbar.update(1)
             
             if ret:
-                # Aplica a função ao frame
-                processed_frame = func(predictor, frame)
-                
-                # Formata o nome do arquivo
-                frame_filename = os.path.join(vout_dir, FORMATO.format(frame_count))
-                
-                image_files.append(frame_filename);
-                
-                # Salva o frame processado na pasta de saída
-                cv2.imwrite(frame_filename, processed_frame)
-                
-                frame_count += 1
+                if batch_size_func is None:
+                    # Aplica a função ao frame
+                    processed_frame = func(predictor, frame)
+                    
+                    # Formata o nome do arquivo
+                    frame_filename = os.path.join(vout_dir, FORMATO.format(frame_count))
+                    
+                    image_files.append(frame_filename);
+                    
+                    # Salva o frame processado na pasta de saída
+                    cv2.imwrite(frame_filename, processed_frame)
+                    
+                    frame_count += 1
 
-                if show:
-                    cv2.imshow('Frame', processed_frame)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break
+                    if show:
+                        cv2.imshow('Frame', processed_frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break
+                else:
+                    list_frame.append(frame);
+                    Nlf=len(list_frame);
+                    
+                    if Nlf==batch_size_func or (frame_count+Nlf)==total_frames:
+                        processed_frame_list = func(predictor, list_frame);
+                        list_frame=[];
+                        
+                        for ID in range(Nlf):
+                            # Formata o nome do arquivo
+                            frame_filename = os.path.join(vout_dir, FORMATO.format(frame_count))
+                            
+                            image_files.append(frame_filename);
+                            
+                            # Salva o frame processado na pasta de saída
+                            cv2.imwrite(frame_filename, processed_frame_list[ID])
+                            
+                            frame_count += 1
+
+                        if show:
+                            cv2.imshow('Frame', processed_frame_list[0])
+                            if cv2.waitKey(1) & 0xFF == ord('q'):
+                                break
             else:
                 break
 
